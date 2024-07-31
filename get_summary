@@ -1,0 +1,61 @@
+# from ebooklib import epub
+# from bs4 import BeautifulSoup
+# import time
+# from crewai import Agent, Crew, Process, Task
+# import PyPDF2
+# from langchain_community.llms import Ollama
+# import re
+# from PIL import Image, ImageDraw, ImageFont
+# import ast
+# from langchain_google_genai import ChatGoogleGenerativeAI
+# from google.cloud.aiplatform_v1beta1.types.content import SafetySetting
+# from vertexai.preview.generative_models import HarmCategory, HarmBlockThreshold
+# from google.cloud.aiplatform_v1beta1.types.content import SafetySetting
+
+
+
+# avid_book_analyst_agent = Agent(
+#     role="you are a story analyst.",
+#     goal="To deeply analyze the provided story and extract the main plot points, characters, and themes in an in-depth manner.",
+#     verbose=True,
+#     memory=True,
+#     backstory="""As a literary analyst, the agent provides an in-depth understanding of the story's key elements.""",
+#     llm=google_model
+# )
+
+# avid_creative_writer_agent = Agent(
+#     role="You are a creative writer who crafts in-depth and engaging summaries for avid readers.",
+#     goal="To craft an in-depth and engaging summary of the book that captures the reader's interest and provides a thorough overview.",
+#     verbose=True,
+#     memory=True,
+#     backstory="""This agent excels at creating in-depth, captivating summaries that are highly informative and engaging.""",
+#     llm=google_model
+# )
+
+# avid_editor_agent = Agent(
+#     role="you are a meticulous editor with a keen eye for detail and a passion for polished prose.",
+#     goal="To review and edit the summary for clarity, engagement, and accuracy.",
+#     verbose=True,
+#     memory=True,
+#     backstory="""This agent ensures that the final summary is clear, engaging, and grammatically correct.""",
+#     llm=google_model
+# )
+
+# # Define the tasks
+# avid_book_analyst_task = Task(
+#     description=f'Analyze the provided story text to extract main plot points, characters, and themes. The story text is: {page_wise_story} and the title is {book_title}.',
+#     expected_output="An in-depth dictionary with keys 'plot', 'characters', and 'themes' containing the extracted information.",
+#     agent=avid_book_analyst_agent
+# )
+
+# avid_creative_writer_task = Task(
+#     description=f'Create an in-depth and engaging summary of the book {book_title} for avid readers based on its key plot points, characters, and themes extracted by the Book Analyst AI.',
+#     expected_output="An in-depth and engaging summary that provides a thorough overview of the book.",
+#     agent=avid_creative_writer_agent
+# )
+
+# avid_editor_task = Task(
+#     description="Review and edit the provided summary for clarity, engagement, and accuracy. The summary is: 'Draft summary text.'",
+#     expected_output="A polished and engaging summary.",
+#     agent=avid_editor_agent
+# )

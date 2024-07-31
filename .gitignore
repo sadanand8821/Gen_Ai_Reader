@@ -1,0 +1,46 @@
+# Node.js
+node_modules/
+dist/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyo
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+*.env
+venv/
+
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+*.class
+*.project
+*.classpath
+
+# General
+.DS_Store
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+*.code-workspace
