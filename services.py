@@ -4,6 +4,7 @@ from ebooklib import epub
 from bs4 import BeautifulSoup
 import ebooklib
 import sys
+import os
 
 logger = logging.getLogger(__name__)
 async def fetch_meaning_from_api(word: str) -> str:
@@ -31,4 +32,40 @@ def extract_text_and_title_from_epub(epub_path: str):
             text_content.append(soup.get_text())
 
     return title, '\n'.join(text_content)
+
+def get_cover_image(path_to_epub, book_title, output_folder='/Users/sadanandsingh/Downloads/coverImages'):
+    book = epub.read_epub(path_to_epub)
+    cover_image = None
+    cover_name = book_title
+    
+    # Create output folder if it doesn't exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    # First try the standard cover item type
+    for item in book.get_items():
+        if item.get_type() == ebooklib.ITEM_COVER:
+            cover_image = item.get_content()
+            cover_name = item.get_name().split('/')[-1]
+            break
+
+    # If not found, look for common cover image names
+    if not cover_image:
+        common_cover_names = ['cover', 'cover-image', 'coverpage', 'coverimage']
+        for item in book.get_items():
+            if any(name in item.get_name().lower() for name in common_cover_names):
+                cover_image = item.get_content()
+                cover_name = item.get_name().split('/')[-1]
+                break
+
+    # If a cover image is found, save it to the specified folder
+    if cover_image:
+        cover_path = os.path.join(output_folder, cover_name)
+        with open(cover_path, 'wb') as f:
+            f.write(cover_image)
+        return cover_path
+    else:
+        print("No cover image found in the EPUB file.")
+        return None
+
    

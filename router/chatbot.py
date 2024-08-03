@@ -6,14 +6,16 @@ from typing import Dict, Any
 import google.generativeai as genai
 from google.generativeai import caching
 import os
+from dotenv import load_dotenv
 
 from crud import get_book_path, get_vocabulary
 from services import extract_text_and_title_from_epub
 
-model = genai.GenerativeModel('gemini-1.5-flash-001')
-genai.configure(api_key="")
+api_key = os.getenv("GOOGLE_API_KEY")
 
-os.environ["GOOGLE_API_KEY"] = ""
+model = genai.GenerativeModel('gemini-1.5-flash-001')
+genai.configure(api_key=api_key)
+
 
 router = APIRouter()
 

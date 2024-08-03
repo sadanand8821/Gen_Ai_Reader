@@ -3,8 +3,6 @@ import logging
 import ast
 from character_description import CharacterDescription
 from crud import add_character_description, get_book_path, get_character_description
-from database import database
-
 
 router = APIRouter()
 

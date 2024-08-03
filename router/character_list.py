@@ -38,15 +38,29 @@ async def insert_characters_into_db(book_id: int, character_list: list):
     ON CONFLICT (book_id, name) DO NOTHING
     """
     try:
-        actual_list = ast.literal_eval(character_list)
+        logger.info(f"Type of character_list: {type(character_list)}")
+        logger.info(f"Content of character_list: {character_list}")
+        
+        # Check if character_list is a string and convert it to a list
+        if isinstance(character_list, str):
+            try:
+                actual_list = ast.literal_eval(character_list)
+                if not isinstance(actual_list, list):
+                    raise ValueError("Parsed character_list is not a list")
+            except (SyntaxError, ValueError) as e:
+                logger.error(f"Error parsing character_list: {e}")
+                raise HTTPException(status_code=400, detail="Invalid character list format")
+        else:
+            actual_list = character_list
+        
         for character in actual_list:
             try:
                 await database.execute(query, values={"book_id": book_id, "name": character})
                 logger.info(f"Inserted character '{character}' for book_id {book_id} into the database")
             except Exception as e:
                 logger.error(f"Error inserting character '{character}' into the database: {e}")
+        return actual_list
 
-        # Proceed with storing `actual_list` in the database
-    except SyntaxError as e:
-        print(f"SyntaxError: {e}")
-        # Handle the error or reformat the string
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")

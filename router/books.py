@@ -4,8 +4,9 @@ import logging
 from grpc import Status
 from pydantic import BaseModel
 
-from crud import create_book, get_books
+from crud import add_cover_image_path, create_book, get_books
 from schemas import BookCreateSchema, BookSchema
+from services import get_cover_image
 
 
 
@@ -49,6 +50,8 @@ async def add_book(book: BookCreateSchema):
     try:
         new_book = await create_book(book)
         logger.info(f"Added new book with ID {new_book['b_id']}")
+        cover_image_path = get_cover_image(new_book['file_path'], new_book['book_title'])
+        await add_cover_image_path(new_book['b_id'], cover_image_path)
         return new_book
     except Exception as e:
         logger.error(f"Error adding book: {e}")

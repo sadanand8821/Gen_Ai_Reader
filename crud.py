@@ -118,3 +118,19 @@ async def add_character_description(book_id: int, character_name: str, descripti
     """
     await database.execute(query, {"book_id": book_id, "name": character_name, "description": description})
     return {"message": "Character description added successfully"}
+
+
+async def get_location(book_id: int):
+    query = "SELECT location_name, description FROM location WHERE book_id = :book_id"
+    rows = await database.fetch_all(query, {"book_id": book_id})
+    logger.info(f"Rows: {rows}")
+    logger.info(rows == None)
+    return [dict(row) for row in rows]
+
+
+# Add Cover Image Path
+
+async def add_cover_image_path(book_id: int, cover_image_path: str):
+    query = "UPDATE books SET cover_image_path = :cover_image_path WHERE b_id = :book_id"
+    await database.execute(query, {"book_id": book_id, "cover_image_path": cover_image_path})
+    return {"message": "Cover image path added successfully"}

@@ -4,16 +4,22 @@ from ebooklib import epub
 from bs4 import BeautifulSoup
 from langchain_google_genai import ChatGoogleGenerativeAI
 import logging
+from dotenv import load_dotenv
+import os
+
 
 logger = logging.getLogger(__name__)
+api_key = os.getenv("GOOGLE_API_KEY")
 
+if not api_key:
+    raise ValueError("GOOGLE_API_KEY environment variable not found")
 
 
 
 google_model=ChatGoogleGenerativeAI(model = "gemini-1.5-flash", 
                             verbose = True,
                             temperature=0.5,
-                            google_api_key="",
+                            google_api_key=api_key,
                             convert_system_message_to_human=True
                             )
 
@@ -34,7 +40,7 @@ class CharacterDescription:
     in transforming textual information into vivid and engaging character profile for regular readers. The novels might also have some pages
     about the writer and his other books. Don't get confused by that"""
           self.agent_task_description = f'Provide a brief introduction of {self.character_name} for new readers of {self.epub_text} as if written by a fellow regular reader The introduction of {self.character_name} should be concise and to the point. The introduction should not reveal the plot of the story. The title of the book is {self.book_title}.'
-          self.agent_task_expected_output = """[Character1, Character2, Character3, ...] where each character is a string."""
+          self.agent_task_expected_output = """Descriptiion of the given character."""
 
 
 

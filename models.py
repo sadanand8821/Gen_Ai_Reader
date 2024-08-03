@@ -28,3 +28,19 @@
 #     Column("description", Text),
 #     Column("image_path", String(255)),
 # )
+
+
+
+class Agent:
+    def __init__(self, role, goal, verbose, backstory, llm):
+        self.role = role
+        self.goal = goal
+        self.verbose = verbose
+        self.backstory = backstory
+        self.llm = llm
+
+class Task:
+    def __init__(self, description, expected_output, agent):
+        self.description = description
+        self.expected_output = expected_output
+        self.agent = agent

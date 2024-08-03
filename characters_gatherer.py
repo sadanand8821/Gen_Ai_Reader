@@ -7,11 +7,15 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from google.cloud.aiplatform_v1beta1.types.content import SafetySetting 
 from vertexai.preview.generative_models import HarmCategory, HarmBlockThreshold 
 from google.cloud.aiplatform_v1beta1.types.content import SafetySetting
+from dotenv import load_dotenv
+import os
+
+api_key = os.getenv("GOOGLE_API_KEY")
 
 google_model=ChatGoogleGenerativeAI(model = "gemini-1.5-flash", 
                             verbose = True,
                             temperature=0.5,
-                            google_api_key="",
+                            google_api_key=api_key,
                             convert_system_message_to_human=True
                             )
 
@@ -29,12 +33,12 @@ class CharacterList:
         self.pathToEpub = pathToEpub
         self.verbose = verbose
         self.epub_text, self.book_title = self.get_story_text(pathToEpub)
-        self.agent_role = "You are a story writer who has written all the novels in the world. Each story is your own story and you understand it by heart"
+        self.agent_role = "You are a story writer who has written all the novels in the world. Each story is your own story and you understand it by heart."
         self.agent_goal = "To meticulously analyze the provided story and extract the names of all characters based on their first appearance."
         self.agent_backstory = """As a literary analyst with years of experience in story analysis, the agent has developed an unparalleled ability
     to identify characters in narratives. This agent excels in recognizing and listing character names from textual information."""
-        self.agent_task_description = f'Extract the names of all characters in the provided story. The story is: {self.epub_text}. The story title is {self.book_title}. In some stories the author provides the character list. Make sure you refer to that as well if available. You do not have to provide a summary of your work. Just provide the list of characters. It should be a python list of strings.'
-        self.agent_task_expected_output = """[Character1, Character2, Character3, ...] where each character is a string."""
+        self.agent_task_description = f'Extract the names of all characters in the provided story. The story is: {self.epub_text}. The story title is {self.book_title}. In some stories the author provides the character list. Make sure you refer to that as well if available. You do not have to provide a summary of your work. Just provide the list of characters.'
+        self.agent_task_expected_output = """A python list of strings exactly like the following: ['Character1', 'Character2', 'Character3', ...] where each character is a string."""
 
     
     def get_story_text(self, pathToEpub):
@@ -72,6 +76,3 @@ class CharacterList:
         )
         character_list =  character_list_crew.kickoff()
         return character_list
-    
-    def store_characters_in_db(self, character_list, book_id):
-        pass

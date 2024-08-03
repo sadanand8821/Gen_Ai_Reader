@@ -7,8 +7,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from crud import add_summary_to_book, get_book_path, get_summary_by_book_id
 from langchain.memory import ChatMessageHistory
 from langchain.schema import HumanMessage, AIMessage, SystemMessage
-from router.chatbot import chat, start_conversation
 from services import extract_text_and_title_from_epub
+from dotenv import load_dotenv
+import os
 
 router = APIRouter()
 
@@ -32,11 +33,13 @@ class Task:
         self.expected_output = expected_output
         self.agent = agent
 
+
 def avid_summary(book_title, story, readerType):
+    api_key = os.getenv("GOOGLE_API_KEY")
     google_model=ChatGoogleGenerativeAI(model = "gemini-1.5-flash", 
                             verbose = True,
                             temperature=0.5,
-                            google_api_key="",
+                            google_api_key=api_key,
                              convert_system_message_to_human=True
                             )
     history = ChatMessageHistory()
@@ -135,7 +138,7 @@ async def analyze_story(book_id: int, readerType):
     try:
         summary = await get_summary_by_book_id(book_id)
         print(len(summary))
-        if(len(summary) == 4):
+        if(len(summary) <= 15):
             title, story_text = extract_text_and_title_from_epub(file_path)
             avid_summary_final = avid_summary(title, story_text, readerType)
             
