@@ -40,13 +40,13 @@ async def get_vocabulary():
 
 # Get CHaracters
 async def get_characters_by_book_id(book_id: int):
-    query = "SELECT name, description FROM characters WHERE book_id = :book_id"
+    query = "SELECT name, description, image_path FROM characters WHERE book_id = :book_id"
     rows = await database.fetch_all(query, {"book_id": book_id})
     return [dict(row) for row in rows]
 
 # Get Locations
 async def get_locations_by_book_id(book_id: int):
-    query = "SELECT location_name AS name, description FROM location WHERE book_id = :book_id"
+    query = "SELECT location_name AS name, description, image_path FROM location WHERE book_id = :book_id"
     rows = await database.fetch_all(query, {"book_id": book_id})
     return [dict(row) for row in rows]
 
@@ -78,7 +78,11 @@ async def add_summary_to_book(book_id: int, summary: str):
     await database.execute(query, {"book_id": book_id, "summary": summary})
     return {"message": "Summary added successfully"}
 
-
+# Get Book Title
+async def get_book_title(book_id: int):
+    query = "SELECT book_title FROM books WHERE b_id = :book_id"
+    row = await database.fetch_one(query, {"book_id": book_id})
+    return row["book_title"]
 
 # Add New Book
 async def create_book(book: BookCreateSchema):
@@ -134,3 +138,25 @@ async def add_cover_image_path(book_id: int, cover_image_path: str):
     query = "UPDATE books SET cover_image_path = :cover_image_path WHERE b_id = :book_id"
     await database.execute(query, {"book_id": book_id, "cover_image_path": cover_image_path})
     return {"message": "Cover image path added successfully"}
+
+
+async def get_location_names(book_id: int):
+    query = "SELECT location_name FROM location WHERE book_id = :book_id"
+    rows = await database.fetch_all(query, {"book_id": book_id})
+    return [row["location_name"] for row in rows]
+
+async def get_character_names(book_id: int):
+    query = "SELECT name FROM characters WHERE book_id = :book_id"
+    rows = await database.fetch_all(query, {"book_id": book_id})
+    return [row["name"] for row in rows]
+
+async def get_specific_character(book_id: int, character_name: str):
+    query = "SELECT name, description, image_path FROM characters WHERE book_id = :book_id AND name = :character_name"
+    row = await database.fetch_one(query, {"book_id": book_id, "character_name": character_name})
+    return dict(row)
+
+async def get_specific_location(book_id: int, location_name: str):
+    query = "SELECT location_name, description, image_path FROM location WHERE book_id = :book_id AND location_name = :location_name"
+    row = await database.fetch_one(query, {"book_id": book_id, "location_name": location_name})
+    return dict(row)
+

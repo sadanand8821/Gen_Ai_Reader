@@ -4,6 +4,7 @@ import ast
 from chapter_summary import ChapterSummary
 from crud import get_book_path
 from database import database
+import re
 
 
 router = APIRouter()
@@ -11,9 +12,18 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.get("/{book_id}/{chapterNumber}")
-async def getChapterWiseSummary(book_id: int, chapterNumber: int):
+async def getChapterWiseSummary(book_id: int, chapterNumber: str):
     try:
-        query = f"SELECT chapter_summary FROM chapter_summaries WHERE book_id={book_id} AND chapter_number={chapterNumber}"
+        logger.info(chapterNumber)
+        chapterNumber = re.sub(r'\W+', '', chapterNumber)
+        logger.info(chapterNumber)
+        
+        
+        query ="""
+            SELECT chapter_summary 
+            FROM chapter_summaries 
+            WHERE book_id = :book_id AND chapter_number = :chapter_number
+        """
         chapter_summary = await database.fetch_one(query)
         if chapter_summary:
             return chapter_summary['chapter_summary']

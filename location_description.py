@@ -29,7 +29,7 @@ class LocationDescription:
         delve into narratives and bring locations to life through words. This agent is trained to recognize subtle details and infer
         characteristics that paint a complete picture of each location. Equipped with an extensive understanding of literary techniques and 
         setting development, the agent excels in transforming textual information into vivid and engaging location profiles."""
-        self.agent_task_description = f'Extract all vividly described locations from the provided text. The descriptions should be detailed enough to create an image. The text is {self.epub_text}.'
+        self.agent_task_description = f'Extract 10 vividly described locations from the provided text. The descriptions should be detailed enough to create an image. The text is {self.epub_text}.'
         self.agent_task_expected_output = """ {
             "Locations": [
                 {
