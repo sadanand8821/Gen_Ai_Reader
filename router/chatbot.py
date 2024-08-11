@@ -21,17 +21,24 @@ router = APIRouter()
 
 logger = logging.getLogger(__name__)
 
+async def get_vocab():
+
+    tough_list = await get_vocabulary()
+
+    return tough_list
+
 tough_list = get_vocabulary()
 print(tough_list)
 initial_content = ""
-initial_context = f"You are Maya, an expert reader of story books and novels. You will be my read-along buddy while I read this book. Help me understand the characters, plots, vocabulary, writing style in the book better as we go along. Give me spoiler-free content and confirm with me before giving content that contains major spoilers. Try to include some words from {tough_list}, if applicable."
+initial_context = f"You are Maya, an expert reader of story books and novels. You will be my read-along buddy while I read this book. Help me understand the characters, plots, vocabulary, writing style in the book better as we go along. Give me spoiler-free content and confirm with me before giving content that contains major spoilers. Try to include some words from {tough_list}, if applicable. Make sure to use the words from the list I provided so as to help me learn them better. Also the answer should be in a proper format as it is directly being displayed on the frontend."
 
 # Global variables to maintain the model and context
-model = None
+model = "models/gemini-1.5-flash-001"
 cache = None
-context = initial_content
+context = initial_context
 
 def update_cache(context, user_input, model_response):
+
     new_content = f"{context}\nUser: {user_input}\nAssistant: {model_response}"
     updated_cache = caching.CachedContent.create(
         model="models/gemini-1.5-flash-001",
@@ -45,15 +52,15 @@ def update_cache(context, user_input, model_response):
 @router.post("/start/{book_id}")
 async def start_conversation(book_id: int):
     global cache, context, model
+    sample_vocab = await get_vocab()
+    words = [item['word'] for item in sample_vocab]
     file_path = await get_book_path(book_id)
     title, story_text = extract_text_and_title_from_epub(file_path)
-    tough_list = await get_vocabulary()
-    system_instructions = f"You are Maya, an expert reader of story books and novels. You will be my read-along buddy while I read this book. Help me understand the characters, plots, vocabulary, writing style in the book better as we go along. Give me spoiler-free content and confirm with me before giving content that contains major spoilers. Try to include some words from {tough_list}, if applicable as these are words I have added to my vocabulary and I want to reinforce these words."
-    print(tough_list)
+    system_instructions = f"You are Maya, an expert reader of story books and novels. You will be my read-along buddy while I read this book. Help me understand the characters, plots, vocabulary, writing style in the book better as we go along. Give me spoiler-free content and confirm with me before giving content that contains major spoilers. Try to include some words from {words}, if applicable. Make sure to use the words from the list I provided so as to help me learn them better. The words present in the list is my vocabulary list. Also the answer should be in a proper format as it is directly being displayed on the frontend."
     cache = caching.CachedContent.create(
-        model="models/gemini-1.5-flash-001",
+        model=model,
         display_name="multi_turn_conversation",
-        system_instruction=initial_context,
+        system_instruction=system_instructions,
         contents=[story_text],
         ttl=datetime.timedelta(minutes=10),
     )
@@ -64,10 +71,10 @@ async def start_conversation(book_id: int):
 
 
 @router.post("/chat/{book_id}")
-async def chat(book_id, user_input: str = Form(...)):
+async def chat(book_id: int, user_input: str = Form(...)):
     global cache, context, model
     if model is None or cache is None:
-        start_conversation(book_id=book_id)
+        await start_conversation(book_id=book_id)
         #raise HTTPException(status_code=400, detail="Conversation not started. Please start the conversation with a book first.")
     try:
         response = model.generate_content([user_input])

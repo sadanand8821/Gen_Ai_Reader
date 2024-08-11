@@ -33,7 +33,7 @@ def extract_text_and_title_from_epub(epub_path: str):
 
     return title, '\n'.join(text_content)
 
-def get_cover_image(path_to_epub, book_title, output_folder='/Users/sadanandsingh/Downloads/coverImages'):
+def get_cover_image(path_to_epub, book_title, output_folder='/Users/sadanandsingh/Desktop/GenAIEBookReader/eBookReaderUI/src/app/mock/coverImages'):
     book = epub.read_epub(path_to_epub)
     cover_image = None
     cover_name = book_title

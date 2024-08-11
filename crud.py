@@ -108,6 +108,8 @@ async def create_book(book: BookCreateSchema):
 async def get_character_description(character_name: str, book_id: int):
     query = "SELECT description FROM characters WHERE name = :character_name AND book_id = :book_id"
     row = await database.fetch_one(query, {"character_name": character_name, "book_id": book_id})
+    if row is None:
+        return None
     return row["description"]
 
 
